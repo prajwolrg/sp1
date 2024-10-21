@@ -68,6 +68,14 @@ pub struct BuildArgs {
         default_value = DEFAULT_OUTPUT_DIR
     )]
     pub output_directory: String,
+    #[clap(
+        alias = "workspace-dir",
+        long,
+        action,
+        help = "Optional workspace directory to be used",
+        default_value = None
+    )]
+    pub workspace_directory: Option<String>,
 }
 
 // Implement default args to match clap defaults.
@@ -84,6 +92,7 @@ impl Default for BuildArgs {
             output_directory: DEFAULT_OUTPUT_DIR.to_string(),
             locked: false,
             no_default_features: false,
+            workspace_directory: None,
         }
     }
 }
@@ -116,4 +125,20 @@ pub fn build_program(path: &str) {
 /// Set the `SP1_SKIP_PROGRAM_BUILD` environment variable to `true` to skip building the program.
 pub fn build_program_with_args(path: &str, args: BuildArgs) {
     build_program_internal(path, Some(args))
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{build_program_with_args, BuildArgs};
+
+    #[test]
+    fn test() {
+        let mut args = BuildArgs::default();
+        args.docker = true;
+        args.workspace_directory = Some("/Users/prajwolgyawali/github/alpenlabs/strata".to_owned());
+        build_program_with_args(
+            "/Users/prajwolgyawali/github/alpenlabs/strata/provers/sp1/guest-evm-ee-stf",
+            args,
+        );
+    }
 }
